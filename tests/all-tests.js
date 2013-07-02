@@ -3,59 +3,62 @@ var assert = require('assert'),
 	RedisRepository = require('../lib/RedisRepository.js'),
 	REDIS_CONNECTION_STRING = "correct_connection_string";
 
-suite('Test Add');
+suite('Test All');
 
-test('Given there is a redis connection when add is called on the repository then the correct set is added to',function(){
+test('Given there is a redis connection when all is called on the repository then the correct set is read from',function(){
 	var connectionSuccesful = true,
-		setAddedTo,
+		setReadFrom,
 		set = 'users',
 		mockRedisClient = {
-			smembers:function(){},
-			sadd: function(setName){
-				setAddedTo = setName;
+			sadd: function(){},
+			smembers: function(setName){
+				setReadFrom = setName;
 			}
 		},
 		fakeRedisConnection = new FakeRedisConnection(connectionSuccesful,mockRedisClient);
-
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
-	userRepository.add("");
-	assert.equal(setAddedTo,set);
+	userRepository.all(function(){});
+	assert.equal(setReadFrom,set);
 });
+
 
 test('Given there is an unsucessful redis connection when add is called on the repository then an error is thrown',function(){
 	var connectionSuccesful = false,
 		mockRedisClient = {
-			smembers:function(){},
-			sadd: function(){}
+			sadd: function(){},
+			smembers: function(){}
 		},
 		fakeRedisConnection = new FakeRedisConnection(connectionSuccesful,mockRedisClient);
-
-	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
-	
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");	
 	assert.throws(
 		function(){
-			userRepository.add("");					
+			var poo = userRepository.all(function(){});			
 		}, 
 		/Unable to establish a connection with the redis server/
 	);
 });
 
-test('Given there is a redis connection when add is called on the repository then the correct item is added to the set',function(){
+test('Given there is a redis connection when all is called on the repository then the correct set is read from',function(){
 	var connectionSuccesful = true,
-		addedItem,
-		item = "Hello",
+		set = 'users',
+		users = ['Jimmy','Max','Ken'],
+		usersFromRedis,
 		mockRedisClient = {
-			smembers:function(){},
-			sadd: function(setName,item){
-				addedItem = item;
+			sadd: function(){},
+			smembers: function(){
+				return users;
 			}
 		},
+		redisResponse = function(users){
+			usersFromRedis = users;
+		};
 		fakeRedisConnection = new FakeRedisConnection(connectionSuccesful,mockRedisClient);
-
-	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
-	userRepository.add(item);
-	assert.equal(addedItem,item);
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
+	userRepository.all(redisResponse);
+	assert.equal(usersFromRedis,users);
 });
+
+
 
 var FakeRedisConnection = function(connectionSucessful,redisClient){
 	function createClient(connectionString){
