@@ -12,7 +12,7 @@
   },
   "main": "./lib/redis-repository.js",
   "dependencies": {
-    "redis": "*"   
+    "then-redis": "*"   
   },
   "devDependencies": {   
     "mocha": "*",
