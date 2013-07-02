@@ -1,4 +1,5 @@
-var assert = require('assert');
+var assert = require('assert'),
+	RedisRepository = require('../lib/RedisRepository.js');
 
 suite('Test Connection');
 
@@ -25,9 +26,6 @@ test('When created then redis client is created with correct connection string',
 	assert.equal(connectionString,redisConnectionString);
 });
 
-var RedisRepository = function(redis,connectionString){
-	redis.createClient(connectionString);
-};
 //var FakeRedis = function(redisClient){
 //	function createClient(connectionString){
 //		if(connectionString === process.env.REDIS_CONNECTION_STRING){
