@@ -1,7 +1,7 @@
 {
   "name": "redis-repository",
   "description": "A repository structure using redis as the underlying storage",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": false,  
   "repository" : { 
     "type" : "git",
