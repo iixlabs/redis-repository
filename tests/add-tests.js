@@ -42,6 +42,22 @@ test('Given there is an unsucessful redis connection when add is called on the r
 	);
 });
 
+test('Given there is a redis connection when add is called on the repository then the correct item is added to the set',function(){
+	var connectionSuccesful = true,
+		addedItem,
+		item = "Hello",
+		mockRedisClient = {
+			sadd: function(setName,item){
+				addedItem = item;
+			}
+		},
+		fakeRedisConnection = new FakeRedisConnection(connectionSuccesful,mockRedisClient);
+
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
+	userRepository.add(item);
+	assert.equal(addedItem,item);
+});
+
 var FakeRedisConnection = function(connectionSucessful,redisClient){
 	function createClient(connectionString){
 		if(connectionString === REDIS_CONNECTION_STRING){
