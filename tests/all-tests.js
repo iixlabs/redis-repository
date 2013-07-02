@@ -6,16 +6,22 @@ var assert = require('assert'),
 suite('Test All');
 
 test('Given there is a redis connection when all is called on the repository then the correct set is read from',function(){
-	var connectionSuccesful = true,
-		setReadFrom,
+	var setReadFrom,
 		set = 'users',
 		mockRedisClient = {
 			sadd: function(){},
+			then: function(success){
+				success();
+			},
+			connect: function(){
+				return this;
+			},
 			smembers: function(setName){
 				setReadFrom = setName;
+				return this;
 			}
 		},
-		fakeRedisConnection = new FakeRedisConnection(connectionSuccesful,mockRedisClient);
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
 	userRepository.all(function(){});
 	assert.equal(setReadFrom,set);
@@ -23,12 +29,19 @@ test('Given there is a redis connection when all is called on the repository the
 
 
 test('Given there is an unsucessful redis connection when add is called on the repository then an error is thrown',function(){
-	var connectionSuccesful = false,
-		mockRedisClient = {
+	var mockRedisClient = {
 			sadd: function(){},
-			smembers: function(){}
+			then: function(success,failure){
+				failure();
+			},
+			connect: function(){
+				return this;
+			},
+			smembers: function(){
+				return this;
+			}
 		},
-		fakeRedisConnection = new FakeRedisConnection(connectionSuccesful,mockRedisClient);
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");	
 	assert.throws(
 		function(){
@@ -39,47 +52,41 @@ test('Given there is an unsucessful redis connection when add is called on the r
 });
 
 test('Given there is a redis connection when all is called on the repository then the correct set is read from',function(){
-	var connectionSuccesful = true,
-		set = 'users',
+	var set = 'users',
 		users = ['Jimmy','Max','Ken'],
 		usersFromRedis,
 		mockRedisClient = {
 			sadd: function(){},
 			smembers: function(){
-				return users;
-			}
+				return this;
+			},
+			then: function(success){
+				success(users);
+			},
+			connect: function(){
+				return this;
+			},
 		},
 		redisResponse = function(users){
 			usersFromRedis = users;
 		};
-		fakeRedisConnection = new FakeRedisConnection(connectionSuccesful,mockRedisClient);
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
 	userRepository.all(redisResponse);
 	assert.equal(usersFromRedis,users);
 });
 
-
-
-var FakeRedisConnection = function(connectionSucessful,redisClient){
+var FakeRedisConnection = function(redisClient){
 	function createClient(connectionString){
 		if(connectionString === REDIS_CONNECTION_STRING){
-			return this;
+			return redisClient;
 		}
-	}
-	function then(success,failure){
-		if(connectionSucessful === true){
-			success(redisClient);
-		}
-		else{
-			failure();
-		}
-	}
-	function connect(){
-		return this;
 	}
 	return{
 		createClient: createClient,
-		then: then,
-		connect: connect
 	};
 };
+
+
+
+	
