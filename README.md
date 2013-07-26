@@ -25,5 +25,12 @@ add `redis-repository` to your `package.json` and import the redisRepositoryFact
         console.log('Look at all my kitties : ',cats);
     });
 
+###Removing data from the repository
+
+    catRepository.remove({name:'trevor'},function(){ 
+        console.log('cat removed!');
+    });
+
+
 
     
