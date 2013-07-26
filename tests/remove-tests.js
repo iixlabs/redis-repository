@@ -28,30 +28,30 @@ test('Given there is a redis connection when remove is called on the repository 
 	assert.equal(setRemovedFrom,set);
 });
 
-// test('Given there is an unsucessful redis connection when add is called on the repository then an error is thrown',function(){
-// 	var mockRedisClient = {
-// 			then: function(success,failure){
-// 				failure();
-// 			},
-// 			connect: function(){
-// 				return this;
-// 			},
-// 			smembers:function(){},
-// 			sadd: function(){
-// 				return this;
-// 			}
-// 		},
-// 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
+test('Given there is an unsucessful redis connection when remove is called on the repository then an error is thrown',function(){
+	var mockRedisClient = {
+			then: function(success,failure){
+				failure();
+			},
+			connect: function(){
+				return this;
+			},
+			smembers:function(){},
+			srem: function(){
+				return this;
+			}
+		},
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
-// 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
 	
-// 	assert.throws(
-// 		function(){
-// 			userRepository.add("",function(){});					
-// 		}, 
-// 		/Unable to establish a connection with the redis server/
-// 	);
-// });
+	assert.throws(
+		function(){
+			userRepository.remove("",function(){});					
+		}, 
+		/Unable to establish a connection with the redis server/
+	);
+});
 
 // test('Given there is a redis connection when add is called on the repository then the correct item is added to the set',function(){
 // 	var addedItem,
