@@ -19,7 +19,8 @@ test('Given there is a redis connection when all is called on the repository the
 			smembers: function(setName){
 				setReadFrom = setName;
 				return this;
-			}
+			},
+			quit: function(){}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
@@ -39,7 +40,8 @@ test('Given there is an unsucessful redis connection when add is called on the r
 			},
 			smembers: function(){
 				return this;
-			}
+			},
+			quit: function(){}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");	
@@ -66,6 +68,7 @@ test('Given there is a redis connection when all is called on the repository the
 			connect: function(){
 				return this;
 			},
+			quit: function(){}
 		},
 		redisResponse = function(users){
 			usersFromRedis = users;
@@ -95,6 +98,7 @@ test('Given there is a redis connection when all is called on the repository the
 			connect: function(){
 				return this;
 			},
+			quit: function(){}
 		},
 		redisResponse = function(users){
 			usersFromRedis = users;
