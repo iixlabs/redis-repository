@@ -19,7 +19,8 @@ test('Given there is a redis connection when remove is called on the repository 
 			srem: function(setName){
 				setRemovedFrom = setName;
 				return this;
-			}
+			},
+			quit: function(){}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
@@ -39,7 +40,8 @@ test('Given there is an unsucessful redis connection when remove is called on th
 			smembers:function(){},
 			srem: function(){
 				return this;
-			}
+			},
+			quit: function(){}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
@@ -67,7 +69,8 @@ test('Given there is a redis connection when add is called on the repository the
 			srem: function(setName,item){
 				removedItem = item;
 				return this;
-			}
+			},
+			quit: function(){}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
@@ -90,7 +93,8 @@ test('Given there is a redis connection when remove is called on the repository 
 			srem: function(setName,item){
 				removedItem = item;
 				return this;
-			}
+			},
+			quit: function(){}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
@@ -114,7 +118,8 @@ test('Given there is a redis connection when remove is called on the repository 
 			},
 			srem: function(setName,callback){
 				return this;
-			}
+			},
+			quit: function(){}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
@@ -123,6 +128,34 @@ test('Given there is a redis connection when remove is called on the repository 
 		callbackCalled = true;
 	});
 	assert.equal(true,callbackCalled);
+});
+
+test('Given there is a redis connection when remove is called on the repository then the connection is closed',function(){
+	var set = 'users',
+		connectionClosed = false,
+		mockRedisClient = {
+			then: function(success){
+				success();
+			},
+			smembers:function(){},
+			connect: function(){
+				return this;
+			},
+			srem: function(setName,callback){
+				return this;
+			},
+			sadd: function(setName,callback){
+				return this;
+			},
+			quit: function(){
+				connectionClosed = true;
+			}
+		},
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
+
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
+	userRepository.remove("",function(){});
+	assert.equal(true,connectionClosed);
 });
 
 
