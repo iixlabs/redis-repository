@@ -100,31 +100,30 @@ test('Given there is a redis connection when remove is called on the repository 
 });
 
 
-// test('Given there is a redis connection when add is called on the repository then callback is called',function(){
-// 	var setAddedTo,
-// 		set = 'users',
-// 		callbackCalled,
-// 		mockRedisClient = {
-// 			then: function(success){
-// 				success();
-// 			},
-// 			smembers:function(){},
-// 			connect: function(){
-// 				return this;
-// 			},
-// 			sadd: function(setName,callback){
-// 				setAddedTo = setName;
-// 				return this;
-// 			}
-// 		},
-// 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
+test('Given there is a redis connection when remove is called on the repository then callback is called',function(){
+	var setAddedTo,
+		set = 'users',
+		callbackCalled,
+		mockRedisClient = {
+			then: function(success){
+				success();
+			},
+			smembers:function(){},
+			connect: function(){
+				return this;
+			},
+			srem: function(setName,callback){
+				return this;
+			}
+		},
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
-// 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
-// 	userRepository.add("",function(){
-// 		callbackCalled = true;
-// 	});
-// 	assert.equal(true,callbackCalled);
-// });
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
+	userRepository.remove("",function(){
+		callbackCalled = true;
+	});
+	assert.equal(true,callbackCalled);
+});
 
 // test('Given there is a redis connection when add is called on the repository then callback is called',function(){
 // 	var setAddedTo,
