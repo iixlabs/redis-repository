@@ -72,6 +72,29 @@ test('Given there is a redis connection when add is called on the repository the
 	assert.equal(addedItem,item);
 });
 
+test('Given there is a redis connection when add is called on the repository then the correct item is added to the set',function(){
+	var addedItem,
+		item = {name:"bob"},
+		mockRedisClient = {
+			then: function(success){
+				success();
+			},
+			smembers:function(){},
+			connect: function(){
+				return this;
+			},
+			sadd: function(setName,item){
+				addedItem = item;
+			}
+		},
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
+
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
+	userRepository.add(item);
+	assert.equal(addedItem,JSON.stringify(item));
+});
+
+
 var FakeRedisConnection = function(redisClient){
 	function createClient(connectionString){
 		if(connectionString === REDIS_CONNECTION_STRING){
