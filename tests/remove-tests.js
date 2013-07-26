@@ -53,28 +53,28 @@ test('Given there is an unsucessful redis connection when remove is called on th
 	);
 });
 
-// test('Given there is a redis connection when add is called on the repository then the correct item is added to the set',function(){
-// 	var addedItem,
-// 		item = "Hello",
-// 		mockRedisClient = {
-// 			then: function(success){
-// 				success();
-// 			},
-// 			smembers:function(){},
-// 			connect: function(){
-// 				return this;
-// 			},
-// 			sadd: function(setName,item){
-// 				addedItem = item;
-// 				return this;
-// 			}
-// 		},
-// 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
+test('Given there is a redis connection when add is called on the repository then the correct item is removed to the set',function(){
+	var removedItem,
+		item = "Hello",
+		mockRedisClient = {
+			then: function(success){
+				success();
+			},
+			smembers:function(){},
+			connect: function(){
+				return this;
+			},
+			srem: function(setName,item){
+				removedItem = item;
+				return this;
+			}
+		},
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
-// 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
-// 	userRepository.add(item,function(){});
-// 	assert.equal(addedItem,item);
-// });
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
+	userRepository.remove(item,function(){});
+	assert.equal(removedItem,item);
+});
 
 // test('Given there is a redis connection when add is called on the repository then the correct item is added to the set',function(){
 // 	var addedItem,
