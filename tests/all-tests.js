@@ -110,6 +110,32 @@ test('Given there is a redis connection when all is called on the repository the
 	assert.deepEqual(usersFromRedis[0],user);
 });
 
+test('Given there is a redis connection when all is called on the repository then the connection is closed',function(){
+	var set = 'users',
+		connectionClosed = false,
+		mockRedisClient = {
+			then: function(success){
+				success([]);
+			},
+			smembers: function(){
+				return this;
+			},
+			connect: function(){
+				return this;
+			},
+			sadd: function(setName,callback){
+				return this;
+			},
+			quit: function(){
+				connectionClosed = true;
+			}
+		},
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
+
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
+	userRepository.all(function(){});
+	assert.equal(true,connectionClosed);
+});
 
 
 var FakeRedisConnection = function(redisClient){
