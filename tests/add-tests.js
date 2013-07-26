@@ -18,12 +18,13 @@ test('Given there is a redis connection when add is called on the repository the
 			},
 			sadd: function(setName){
 				setAddedTo = setName;
+				return this;
 			}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
-	userRepository.add("");
+	userRepository.add("",function(){});
 	assert.equal(setAddedTo,set);
 });
 
@@ -36,7 +37,9 @@ test('Given there is an unsucessful redis connection when add is called on the r
 				return this;
 			},
 			smembers:function(){},
-			sadd: function(){}
+			sadd: function(){
+				return this;
+			}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
@@ -44,7 +47,7 @@ test('Given there is an unsucessful redis connection when add is called on the r
 	
 	assert.throws(
 		function(){
-			userRepository.add("");					
+			userRepository.add("",function(){});					
 		}, 
 		/Unable to establish a connection with the redis server/
 	);
@@ -63,12 +66,13 @@ test('Given there is a redis connection when add is called on the repository the
 			},
 			sadd: function(setName,item){
 				addedItem = item;
+				return this;
 			}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
-	userRepository.add(item);
+	userRepository.add(item,function(){});
 	assert.equal(addedItem,item);
 });
 
@@ -85,13 +89,41 @@ test('Given there is a redis connection when add is called on the repository the
 			},
 			sadd: function(setName,item){
 				addedItem = item;
+				return this;
 			}
 		},
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,"");
-	userRepository.add(item);
+	userRepository.add(item,function(){});
 	assert.equal(addedItem,JSON.stringify(item));
+});
+
+
+test('Given there is a redis connection when add is called on the repository then callback is called',function(){
+	var setAddedTo,
+		set = 'users',
+		callbackCalled,
+		mockRedisClient = {
+			then: function(success){
+				success();
+			},
+			smembers:function(){},
+			connect: function(){
+				return this;
+			},
+			sadd: function(setName,callback){
+				setAddedTo = setName;
+				return this;
+			}
+		},
+		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
+
+	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
+	userRepository.add("",function(){
+		callbackCalled = true;
+	});
+	assert.equal(true,callbackCalled);
 });
 
 

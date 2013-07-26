@@ -84,6 +84,7 @@ test('Given there is a redis connection when all is called on the repository the
 		mockRedisClient = {
 			sadd: function(setname,item){
 				users.push(item);
+				return this;
 			},
 			smembers: function(){
 				return this;
@@ -100,7 +101,7 @@ test('Given there is a redis connection when all is called on the repository the
 		};
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
-	userRepository.add(user);
+	userRepository.add(user,function(){});
 	userRepository.all(redisResponse);
 	assert.deepEqual(usersFromRedis[0],user);
 });
