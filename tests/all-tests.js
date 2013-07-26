@@ -73,7 +73,6 @@ test('Given there is a redis connection when all is called on the repository the
 		fakeRedisConnection = new FakeRedisConnection(mockRedisClient);
 	var userRepository = new RedisRepository(fakeRedisConnection,REDIS_CONNECTION_STRING,set);
 	userRepository.all(redisResponse);
-	console.log(usersFromRedis.length == users.length);
 	assert.deepEqual(usersFromRedis,users);
 });
 
